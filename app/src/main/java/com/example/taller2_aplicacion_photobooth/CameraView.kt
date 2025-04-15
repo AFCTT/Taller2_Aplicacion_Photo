@@ -21,14 +21,19 @@ import androidx.compose.foundation.background
 import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,8 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LifecycleStartEffect
 import com.google.common.util.concurrent.ListenableFuture
 import java.io.File
+import java.util.concurrent.Executor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -49,21 +56,25 @@ fun CameraView(
     context: Context = LocalContext.current
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
+    val photoPath = remember { mutableStateOf<String?>(null) }
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-    var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_BACK) }
-
+    var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
     val imageCapture = remember {
         ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .build()
     }
-    val preview = remember { Preview.Builder().build() }
+    val cameraController = remember {
+        LifecycleCameraController(context)
+    }
 
-    val cameraSelector = remember {
+    val preview = remember (lensFacing){ Preview.Builder().build() }
+    val cameraSelector = remember(lensFacing) {
         CameraSelector.Builder()
             .requireLensFacing(lensFacing)
             .build()
     }
+
 
     CameraPreviewWithFrame(
         cameraProviderFuture = cameraProviderFuture,
@@ -73,15 +84,13 @@ fun CameraView(
         imageCapture = imageCapture
     )
 
-
-
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = Modifier
             .fillMaxWidth()
             .height((LocalConfiguration.current.screenHeightDp.dp * 0.3f))
     ) {
-        Button(onClick = {
+        FloatingActionButton (onClick = {
             val photoFile = File(
                 context.filesDir,
                 "IMG_${System.currentTimeMillis()}.jpg"
@@ -96,6 +105,7 @@ fun CameraView(
                     }
 
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                        photoPath.value = photoFile.absolutePath
                         Toast.makeText(context, "📸 Foto guardada correctamente", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -104,7 +114,9 @@ fun CameraView(
             Text("Tomar foto")
         }
 
-        Button(onClick = {
+        FloatingActionButton (onClick = {
+            val executor= ContextCompat.getMainExecutor(context)
+            takePicture(cameraController, executor)
             lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK)
                 CameraSelector.LENS_FACING_FRONT
             else
@@ -123,6 +135,7 @@ fun CameraPreviewWithFrame(
     cameraSelector: CameraSelector,
     preview: Preview,
     imageCapture: ImageCapture
+
 ) {
     val gradient = Brush.linearGradient(
         colors = listOf(
@@ -170,6 +183,20 @@ fun CameraPreviewWithFrame(
     }
 }
 
+fun takePicture(cameraController: CameraController, executor: Executor){
+    val file= File.createTempFile("imagenText",".jpg")
+    val outputDirectory = ImageCapture.OutputFileOptions.Builder(file).build()
+    cameraController.takePicture(outputDirectory, executor,object : ImageCapture.OnImageSavedCallback{
+        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+            println(outputFileResults.savedUri)
+        }
+
+        override fun onError(exception: ImageCaptureException) {
+            println()
+        }
+
+    })
+}
 
 
 

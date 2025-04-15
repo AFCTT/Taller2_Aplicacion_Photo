@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,54 +34,60 @@ import com.google.accompanist.permissions.shouldShowRationale
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraPermissionScreen (){
-    val permissionState=rememberPermissionState(permission = android.Manifest.permission.CAMERA)
+fun CameraPermissionScreen() {
+    val permissionState = rememberPermissionState(permission = android.Manifest.permission.CAMERA)
 
     Box(
-        modifier = Modifier.fillMaxSize().background(
-            Brush.verticalGradient(
-                colors = listOf(
-                    _root_ide_package_.androidx.compose.ui.graphics
-                        .Color(0xFFFFD194),
-                    _root_ide_package_.androidx.compose.ui.graphics
-                        .Color(0xFF70E1F5))
-        )),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        androidx.compose.ui.graphics.Color(0xFFFFD194),
+                        androidx.compose.ui.graphics.Color(0xFF70E1F5)
+                    )
+                )
+            ),
         contentAlignment = Alignment.Center
-    ){
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier= Modifier.padding(24.dp))
-        {
-//            Text(
-//                text = when{
-//
-//
-//
-//                },
-//                style= MaterialTheme.typography.bodyLarge,
-//                color = androidx.compose.ui.graphics.Color.White,
-//            )
-            if (permissionState.status.isGranted){
-                CameraView()
-            } else if (permissionState.status.shouldShowRationale){
-                "Necesito el permiso para poder tomar las fotos que necesitass!! >:v "
-            }
-            else{
-                "✨Acepta los permisos para poder empezar ✨"
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                permissionState.launchPermissionRequest()
-            },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = androidx.compose.ui.graphics.Color.White,
-                    contentColor = _root_ide_package_.androidx.compose.ui.graphics.Color(0xFF2193b0)
-                )
-            ){
-                Text(text = "Dame Permiso 🙏🥺")
+            modifier = Modifier.padding(24.dp)
+        ) {
+            when {
+                permissionState.status.isGranted -> {
+                    CameraView()
+                }
+                permissionState.status.shouldShowRationale -> {
+                    Text("Necesito el permiso para poder tomar las fotos que necesitass!! >:v ")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = {
+                        permissionState.launchPermissionRequest()
+                    },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = androidx.compose.ui.graphics.Color.White,
+                            contentColor = androidx.compose.ui.graphics.Color(0xFF2193b0)
+                        )
+                    ) {
+                        Text(text = "Dame Permiso 🙏🥺")
+                    }
+                }
+                else -> {
+                    Text("✨Acepta los permisos para poder empezar ✨")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = {
+                        permissionState.launchPermissionRequest()
+                    },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = androidx.compose.ui.graphics.Color.White,
+                            contentColor = androidx.compose.ui.graphics.Color(0xFF2193b0)
+                        )
+                    ) {
+                        Text(text = "Dame Permiso 🙏🥺")
+                    }
+                }
             }
         }
     }
-
 }
