@@ -2,6 +2,8 @@ package com.example.taller2_aplicacion_photobooth
 
 import android.R.attr.text
 import android.graphics.Color
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +30,7 @@ import com.google.accompanist.permissions.shouldShowRationale
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CameraPermissionScreen (){
