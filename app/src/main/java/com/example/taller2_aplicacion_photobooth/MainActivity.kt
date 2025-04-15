@@ -18,12 +18,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Taller2_Aplicacion_PhotoboothTheme {
-                Camara()
-            }
+            CameraPermissionScreen()
         }
     }
 }
-
-
 
