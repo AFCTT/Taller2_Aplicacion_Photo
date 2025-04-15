@@ -49,16 +49,23 @@ fun CameraPermissionScreen (){
             verticalArrangement = Arrangement.Center,
             modifier= Modifier.padding(24.dp))
         {
-            Text(
-                text = when{
-                    permissionState.status.isGranted -> "Mission Successful"
-                    permissionState.status.shouldShowRationale -> "Necesito el permiso para poder tomar las fotos que necesitass!! >:v "
-
-                    else -> "✨Acepta los permisos para poder empezar ✨"
-                },
-                style= MaterialTheme.typography.bodyLarge,
-                color = androidx.compose.ui.graphics.Color.White,
-            )
+//            Text(
+//                text = when{
+//
+//
+//
+//                },
+//                style= MaterialTheme.typography.bodyLarge,
+//                color = androidx.compose.ui.graphics.Color.White,
+//            )
+            if (permissionState.status.isGranted){
+                CameraView()
+            } else if (permissionState.status.shouldShowRationale){
+                "Necesito el permiso para poder tomar las fotos que necesitass!! >:v "
+            }
+            else{
+                "✨Acepta los permisos para poder empezar ✨"
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 permissionState.launchPermissionRequest()
