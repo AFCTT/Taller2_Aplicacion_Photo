@@ -1,5 +1,6 @@
 package com.example.taller2_aplicacion_photobooth
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,7 +21,7 @@ import java.io.File
 @Composable
 fun GalleryScreen(
     photos: List<File> = emptyList(),
-    modifier: Modifier = Modifier
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.background(
