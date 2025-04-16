@@ -52,8 +52,9 @@ import java.util.concurrent.Executor
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CameraView(
-    //modifier: Modifier = Modifier,
-    context: Context = LocalContext.current
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    onPhotoTaken: (File) -> Unit = {} // Callback para notificar cuando se toma una foto
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val photoPath = remember { mutableStateOf<String?>(null) }
@@ -75,7 +76,6 @@ fun CameraView(
             .build()
     }
 
-
     CameraPreviewWithFrame(
         cameraProviderFuture = cameraProviderFuture,
         lifecycleOwner = lifecycleOwner,
@@ -88,7 +88,7 @@ fun CameraView(
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = Modifier
             .fillMaxWidth()
-            .height((LocalConfiguration.current.screenHeightDp.dp * 0.3f))
+            .padding(16.dp)
     ) {
         FloatingActionButton (onClick = {
             val photoFile = File(
@@ -106,6 +106,7 @@ fun CameraView(
 
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         photoPath.value = photoFile.absolutePath
+                        onPhotoTaken(photoFile) // Notificamos que se tomó una foto
                         Toast.makeText(context, "📸 Foto guardada correctamente", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -135,7 +136,6 @@ fun CameraPreviewWithFrame(
     cameraSelector: CameraSelector,
     preview: Preview,
     imageCapture: ImageCapture
-
 ) {
     val gradient = Brush.linearGradient(
         colors = listOf(
@@ -194,9 +194,5 @@ fun takePicture(cameraController: CameraController, executor: Executor){
         override fun onError(exception: ImageCaptureException) {
             println()
         }
-
     })
 }
-
-
-
