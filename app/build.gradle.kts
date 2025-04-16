@@ -51,10 +51,11 @@ dependencies {
     implementation("androidx.camera:camera-extensions:1.4.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-
+    implementation ("androidx.compose.foundation:foundation:1.7.8")
+    implementation ("androidx.camera:camera-core:1.4.2")
     // Coil para cargar imágenes
     implementation("io.coil-kt:coil-compose:2.5.0")
-
+    implementation("io.coil-kt:coil-gif:2.4.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
